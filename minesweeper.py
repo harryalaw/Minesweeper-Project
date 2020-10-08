@@ -38,9 +38,18 @@ class DisplayWindow(Frame):
         self.start_screen()
         self.init_scoreboard()
 
+    def is_valid_number(self, text, widget):
+        """Limits input to the entry boxes to 2 digit numbers"""
+        if len(text) > 2:
+            return False
+        for char in text:
+            if not char.isdigit():
+                return False
+        return True
+
     def start_screen(self):
         """creates the initial screen that is displayed"""
-        self.start_screen = Frame(self.master)
+        self.start_screen = Frame(self.master, name='start')
         rows_amount = StringVar()
         cols_amount = StringVar()
         mine_amount = StringVar()
@@ -54,12 +63,20 @@ class DisplayWindow(Frame):
         easy_button = Button(self.start_screen, text="Beginner")
         med_button = Button(self.start_screen, text="Intermediate")
         hard_button = Button(self.start_screen, text="Experienced")
+
         row_lbl = Label(self.start_screen, text="Rows:")
         col_lbl = Label(self.start_screen, text="Columns:")
         mine_lbl = Label(self.start_screen, text="Mines:")
-        row_entry = Entry(self.start_screen, text=rows_amount, width=3)
-        col_entry = Entry(self.start_screen, text=cols_amount, width=3)
-        mine_entry = Entry(self.start_screen, text=mine_amount, width=3)
+
+        isNumberCommand = self.start_screen.register(self.is_valid_number)
+
+        row_entry = Entry(self.start_screen, name='rows', text=self.rows_amount, width=3,
+                          validate='all', validatecommand=(isNumberCommand, '%P', '%W'))
+        col_entry = Entry(self.start_screen, name='cols', text=self.cols_amount, width=3,
+                          validate='all', validatecommand=(isNumberCommand, '%P', '%W'))
+        mine_entry = Entry(self.start_screen, name='mines', text=self.mine_amount, width=3,
+                           validate='all', validatecommand=(isNumberCommand, '%P', '%W'))
+
         start_button = Button(self.start_screen, text="Start Game")
 
         easy_button.grid(row=0, column=0, sticky='ew')
@@ -82,6 +99,7 @@ class DisplayWindow(Frame):
         easy_button["command"] = lambda: set_entries('9', '9', '10')
         med_button["command"] = lambda:  set_entries('16', '16', '40')
         hard_button["command"] = lambda: set_entries('20', '24', '99')
+
         start_button["command"] = lambda: self.new_game(
             cols_amount.get(), rows_amount.get(), mine_amount.get())
 
@@ -124,11 +142,10 @@ class DisplayWindow(Frame):
     def new_game(self, width, height, minecount):
         """Initialises a new game board"""
         self.start_screen.grid_forget()
-        # @TODO Do better entry validation
-        try:  # deals with incorrectly filled in entries on start screen
-            width, height, minecount = int(width), int(height), int(minecount)
-        except ValueError:  # defaults to an easy board
-            width, height, minecount = 9, 9, 10
+
+        # always at least one non-mine square
+        minecount = min(width*height-1, minecount)
+
         self.mineboard = Mineboard(
             width, height, minecount)
         self.change_display(width, height)
