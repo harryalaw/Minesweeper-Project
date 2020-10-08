@@ -45,6 +45,8 @@ class DisplayWindow(Frame):
         for char in text:
             if not char.isdigit():
                 return False
+        if text != '' and int(text) == 0:
+            return False
         return True
 
     def start_screen(self):
@@ -70,11 +72,11 @@ class DisplayWindow(Frame):
 
         isNumberCommand = self.start_screen.register(self.is_valid_number)
 
-        row_entry = Entry(self.start_screen, name='rows', text=self.rows_amount, width=3,
+        row_entry = Entry(self.start_screen, name='rows', text=rows_amount, width=3,
                           validate='all', validatecommand=(isNumberCommand, '%P', '%W'))
-        col_entry = Entry(self.start_screen, name='cols', text=self.cols_amount, width=3,
+        col_entry = Entry(self.start_screen, name='cols', text=cols_amount, width=3,
                           validate='all', validatecommand=(isNumberCommand, '%P', '%W'))
-        mine_entry = Entry(self.start_screen, name='mines', text=self.mine_amount, width=3,
+        mine_entry = Entry(self.start_screen, name='mines', text=mine_amount, width=3,
                            validate='all', validatecommand=(isNumberCommand, '%P', '%W'))
 
         start_button = Button(self.start_screen, text="Start Game")
@@ -142,7 +144,7 @@ class DisplayWindow(Frame):
     def new_game(self, width, height, minecount):
         """Initialises a new game board"""
         self.start_screen.grid_forget()
-
+        width, height, minecount = int(width), int(height), int(minecount)
         # always at least one non-mine square
         minecount = min(width*height-1, minecount)
 
