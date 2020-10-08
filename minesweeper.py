@@ -1,4 +1,4 @@
-import mineboard
+from mineboard import Mineboard
 from tkinter import *
 from PIL import Image, ImageTk
 from math import floor
@@ -211,8 +211,9 @@ class DisplayWindow(Frame):
                 self.canvas.itemconfig(
                     self.cells[i][j], fill=COLORS[int(text_val)])
                 if text_val != '0':
+                    # offset here is by 12 pixels
                     self.canvas.create_text(
-                        2+j*CELLWIDTH+CELLWIDTH//2, 2+i*CELLWIDTH+CELLWIDTH//2, anchor='center', text=f"{text_val}")
+                        2+j*CELLWIDTH+(CELLWIDTH-1)//2, 2+i*CELLWIDTH+(CELLWIDTH-1)//2, anchor='center', text=f"{text_val}")
 
         mineboard.changes = []  # removes previous changes
         if mineboard.gamestate is not None:
